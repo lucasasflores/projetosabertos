@@ -6,9 +6,11 @@ def formatar_campos(data, mapeamento, schema):
         for chave, valor in data.items():
             if chave in mapeamento:
                 novo_nome = mapeamento[chave]
-                novo_valor = formatar_campos(valor, mapeamento, schema)
-                if novo_nome in schema["fields"]:
+                if isinstance(valor, list) or isinstance(valor, dict):
+                    novo_valor = formatar_campos(valor, mapeamento, schema)
                     novo_dicionario[novo_nome] = novo_valor
+                else:
+                    novo_dicionario[novo_nome] = valor
         return novo_dicionario
     else:
         return data
