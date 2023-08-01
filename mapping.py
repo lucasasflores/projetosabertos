@@ -6,7 +6,7 @@ def apply_mapping(data, mapping):
         for key, value in data.items():
             if isinstance(value, (dict,list)):
                 key_new = mapping.get(key, key)
-                result[key_new] = apply_mapping(data[key], mapping[key_new])
+                result[key_new] = apply_mapping(data[key], mapping.get(key_new, mapping))
             else:
                 key_new = mapping.get(key, key)
                 result[key_new] = value
@@ -22,7 +22,7 @@ data = {
     "home_addres": [{"type_xpto": 1}, {"type_xpto": 2, "xpto": 321}],
     "person_id": 123,
     "full_name": "John Doe",
-    "phone_data": [{"num": "123456789", "type_xpto": "home"}, {"num": "987654321", "type_xpto": "work"}],
+    "phone_data": [{"num": ["123456789"], "type_xpto": "home"}, {"num": "987654321", "type_xpto": "work"}],
     "scores_history": 78,
     "math_scores": 85,
     "science_scores": 92,
@@ -35,13 +35,16 @@ mapping = {
     "zip": "address_zipcode",
     "emails": "emails",
     "home_addres": "home",
-    "home":{"type_xpto": "type_home"},
+    "home": {
+        "type_xpto": "type_home",
+        "xpto": "teste1"
+    },
     "person_id": "person_id",
     "full_name": "full_name",
     "phone_data": "phone_numbers",
     "phone_numbers": {
-        "num": "number",
-        "type_xpto": "type_phone"
+        "type_xpto": "type_phone",
+        "num": "numbers"
     },
     "scores_history": "scores_history",
     "math_scores": "scores_math",
