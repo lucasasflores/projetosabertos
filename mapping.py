@@ -36,8 +36,7 @@ mapping = {
     "emails": "emails",
     "home_addres": "home",
     "home": {
-        "type_xpto": "type_home",
-        "xpto": "teste1"
+        "type_xpto": "type_home"
     },
     "person_id": "person_id",
     "full_name": "full_name",

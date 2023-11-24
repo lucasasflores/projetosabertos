@@ -10,23 +10,26 @@ def flatten_dict(d, parent_key='', sep='_'):
             items.append((new_key, v))
     return dict(items)
 
-def flatten_complex_data(input_data, sep='_'):
-    if isinstance(input_data, dict):
-        return flatten_dict(input_data, sep=sep)
-    # elif isinstance(input_data, list):
-    #     return [flatten_complex_data(item, sep=sep) for item in input_data]
-    # else:
-    #     return input_data
-
-input_data = [
-    "data": [
-        {"key1": 1, "key2": [{"item1": {"xz": 1}}, {"item1": {"xz": 2}}], "key3": {"xv": 1, "xk": 2}},
-        {"key1": 2, "key2": [{"item1": {"xz": 2}}, {"item1": {"xz": 3}}], "key3": {"xv": 4, "xk": 5}}
+data_complex = {
+    "id": 123,
+    "name": "John Doe",
+    "emails": ["john@example.com", "doe@example.com"],
+    "phone_numbers": [
+        {"type": "home", "number": "123456789"},
+        {"type": "work", "number": "987654321"}
     ],
-    "teste": "oi",
-    "teste2": 4
-]
+    "address": {
+        "street": "123 Main Street",
+        "city": "New York",
+        "zipcode": "10001"
+    },
+    "scores": {
+        "math": 85,
+        "science": 92,
+        "history": 78
+    }
+}
 
-flattened_data = flatten_complex_data(input_data)
+flattened_data = flatten_dict(data_complex)
 
 print(flattened_data)
