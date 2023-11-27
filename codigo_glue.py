@@ -1,32 +1,31 @@
-import sys
-from awsglue.transforms import *
-from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
-from pyspark.sql import SparkSession
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
 
-# Inicializar o contexto Spark
+# Inicializa o contexto Spark e o contexto Glue
 sc = SparkContext()
 glueContext = GlueContext(sc)
 spark = glueContext.spark_session
 
-# Obter as opções fornecidas ao script
-args = getResolvedOptions(sys.argv, ['JOB_NAME'])
+# Leitura dos dados da tabela1
+tabela1 = glueContext.create_dynamic_frame.from_catalog(
+    database="seu_banco_de_dados",
+    table_name="tabela1"
+)
 
-# Carregar dados da tabela de origem para um DynamicFrame
-source_table = "seu_banco_de_dados.sua_tabela_origem"
-source_dynamic_frame = glueContext.create_dynamic_frame.from_catalog(database="seu_banco_de_dados", table_name="sua_tabela_origem")
+# Transformação de colunas
+tabela2 = tabela1.apply_mapping([
+    ("nome", "string", "name", "string"),
+    ("sobrenome", "string", "lastname", "string"),
+    ("anomesdia", "string", "anomesdia", "string")
+    # Adicione mais mapeamentos conforme necessário
+])
 
-# Converter DynamicFrame para DataFrame para aplicar transformações
-source_dataframe = source_dynamic_frame.toDF()
-
-# Aplicar transformações, se necessário (opcional)
-# Exemplo: Adicionar uma coluna com uma transformação simples
-transformed_dataframe = source_dataframe.withColumn("nova_coluna_destino", source_dataframe["coluna_origem"])
-
-# Especificar a tabela de destino e a coluna de partição
-output_table = "seu_banco_de_dados.sua_tabela_destino"
-partition_column = "sua_coluna_de_particao"
-
-# Salvar o DataFrame na tabela de destino usando append e particionamento
-transformed_dataframe.write.mode("append").partitionBy(partition_column).saveAsTable(output_table)
+# Escrita dos dados na tabela2 no formato Avro
+glueContext.write_dynamic_frame.from_catalog(
+    frame=tabela2,
+    database="seu_banco_de_dados",
+    table_name="tabela2",
+    format="avro"
+)
