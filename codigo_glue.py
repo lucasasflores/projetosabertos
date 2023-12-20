@@ -29,3 +29,30 @@ glueContext.write_dynamic_frame.from_catalog(
     table_name="tabela2",
     format="avro"
 )
+
+
+def list_objects(bucket_name, prefix='', continuation_token=None, object_uris=None):
+    if object_uris is None:
+        object_uris = []  # Inicializa a lista se não existir
+    
+    s3 = boto3.client('s3')
+    
+    # Parâmetros iniciais
+    operation_parameters = {'Bucket': bucket_name, 'Prefix': prefix}
+    
+    # Adicionar o token de continuação se existir
+    if continuation_token:
+        operation_parameters['ContinuationToken'] = continuation_token
+    
+    # Chamada para list_objects_v2
+    result = s3.list_objects_v2(**operation_parameters)
+    
+    # Processar objetos da página atual
+    object_uris.extend([f"s3://{obj['Bucket']}/{obj['Key']}" for obj in result.get('Contents', [])])
+    
+    # Verificar se há mais páginas e chamar recursivamente se necessário
+    if result.get('IsTruncated', False):
+        next_continuation_token = result.get('NextContinuationToken')
+        list_objects(bucket_name, prefix, next_continuation_token, object_uris)
+    
+    return object_uris
